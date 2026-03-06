@@ -58,7 +58,7 @@
   .header-mark svg { width: 20px; height: 20px; stroke: var(--sage); fill: none; }
   .header-text h1 {
     font-family: 'Noto Serif TC', serif;
-    font-size: 1.25rem;
+    font-size: 1.4rem;
     font-weight: 500;
     color: var(--text-dark);
     letter-spacing: 0.08em;
@@ -84,7 +84,7 @@
     flex: 1;
     text-align: center;
     padding: 16px 8px;
-    font-size: 0.8rem;
+    font-size: 0.9rem;
     color: var(--text-light);
     letter-spacing: 0.05em;
     position: relative;
@@ -165,7 +165,7 @@
 
   .section-title {
     font-family: 'Noto Serif TC', serif;
-    font-size: 1.05rem;
+    font-size: 1.15rem;
     font-weight: 500;
     color: var(--text-dark);
     letter-spacing: 0.06em;
@@ -197,7 +197,7 @@
   .field.span2 { grid-column: span 2; }
 
   label {
-    font-size: 0.9rem;
+    font-size: 1rem;
     color: var(--text-mid);
     letter-spacing: 0.04em;
     font-weight: 400;
@@ -215,8 +215,8 @@
   select,
   textarea {
     width: 100%;
-    padding: 13px 16px;
-    font-size: 1rem;
+    padding: 15px 18px;
+    font-size: 1.1rem;
     font-family: 'Noto Sans TC', sans-serif;
     color: var(--text-dark);
     background: var(--cream);
@@ -258,11 +258,11 @@
     align-items: center;
     gap: 10px;
     cursor: pointer;
-    padding: 11px 20px;
+    padding: 13px 20px;
     border: 1px solid var(--border);
     border-radius: 2px;
     background: var(--cream);
-    font-size: 0.95rem;
+    font-size: 1.05rem;
     color: var(--text-mid);
     transition: all 0.2s;
     flex: 1;
@@ -603,9 +603,24 @@
     .progress-wrap { padding: 0 16px; }
     .step { font-size: 0.7rem; }
   }
+
+  /* ── Company Bar ── */
+  .company-bar {
+    background: var(--bark);
+    color: var(--cream);
+    text-align: center;
+    padding: 10px 20px;
+    font-family: 'Noto Serif TC', serif;
+    font-size: 1.05rem;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+  }
+
 </style>
 </head>
 <body>
+
+<div class="company-bar">飛菲管理顧問有限公司</div>
 
 <header>
   <div class="header-mark">
@@ -727,12 +742,20 @@
       </div>
       <div class="field-group full">
         <div class="field">
+          <label>帳單地址（就安費／健保費／職保費）<span class="req">*</span></label>
+          <input type="text" id="billingAddress" placeholder="請填寫可收信地址，避免未收到帳單產生滯納金">
+          <span class="hint">⚠️ 請確認此地址可正常收信，帳單將寄送至此處</span>
+          <span class="err-msg" id="err-billingAddress">請填寫帳單地址</span>
+        </div>
+      </div>
+      <div class="field-group full">
+        <div class="field">
           <label>申請人是否首次聘任外籍看護工？<span class="req">*</span></label>
           <div class="radio-group">
             <label class="radio-label">
-              <input type="radio" name="firstHire" value="是，首次聘任">
+              <input type="radio" name="firstHire" value="是，第一次聘任">
               <span class="radio-dot"></span>
-              是，首次聘任
+              是，第一次聘任
             </label>
             <label class="radio-label">
               <input type="radio" name="firstHire" value="否，曾聘任過">
@@ -1030,6 +1053,7 @@ function validateAll() {
   if(!val('patientID', v=>/^[A-Z][12]\d{8}$/.test(v), 'err-patientID')) ok=false;
   if(!val('patientAddress', v=>v.length>0, 'err-patientAddress')) ok=false;
   if(!val('workAddress', v=>v.length>0, 'err-workAddress')) ok=false;
+  if(!val('billingAddress', v=>v.length>0, 'err-billingAddress')) ok=false;
   const fh = document.querySelector('input[name="firstHire"]:checked');
   if(!fh) { showErr('err-firstHire'); ok=false; } else clearErr('err-firstHire');
   ['idFront','idBack','patientIdFront','patientIdBack'].forEach(k => {
@@ -1064,6 +1088,7 @@ async function submitForm() {
       被看護人身分證字號: g('patientID'),
       被看護人戶籍地址: g('patientAddress'),
       移工實際工作地址: g('workAddress'),
+      帳單地址: g('billingAddress'),
       首次聘任外籍看護工: document.querySelector('input[name="firstHire"]:checked').value,
       送出時間: new Date().toLocaleString('zh-TW')
     };
