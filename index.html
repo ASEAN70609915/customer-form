@@ -1088,6 +1088,9 @@ async function submitForm() {
     const resp = await fetch(GAS_URL, { method: 'POST', body: fd });
     const result = await resp.json();
 
+    // 除錯：把 log 印到 console
+    if (result.log) console.log('GAS LOG:', result.log.join('\n'));
+
     if (result.status === 'ok') {
       showSuccess();
     } else {
