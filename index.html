@@ -1067,12 +1067,23 @@ async function submitForm() {
       首次聘任外籍看護工: document.querySelector('input[name="firstHire"]:checked').value,
       送出時間: new Date().toLocaleString('zh-TW')
     };
-    fd.append('data', JSON.stringify(data));
-    // Images
-    fd.append('idFront', files.idFront, '雇主身分證正面_' + data.申請人姓名 + getExt(files.idFront));
-    fd.append('idBack',  files.idBack,  '雇主身分證背面_' + data.申請人姓名 + getExt(files.idBack));
-    fd.append('patientIdFront', files.patientIdFront, '被看護人身分證正面_' + data.被看護人姓名 + getExt(files.patientIdFront));
-    fd.append('patientIdBack',  files.patientIdBack,  '被看護人身分證背面_' + data.被看護人姓名 + getExt(files.patientIdBack));
+    // 將圖片轉成 Base64 再送出
+    const toB64 = file => new Promise((res, rej) => {
+      const r = new FileReader();
+      r.onload = () => res(r.result);
+      r.onerror = rej;
+      r.readAsDataURL(file);
+    });
+    const [b64Front, b64Back, b64PFront, b64PBack] = await Promise.all([
+      toB64(files.idFront), toB64(files.idBack),
+      toB64(files.patientIdFront), toB64(files.patientIdBack)
+    ]);
+
+    fd.append('data',           JSON.stringify(data));
+    fd.append('idFront',        b64Front);
+    fd.append('idBack',         b64Back);
+    fd.append('patientIdFront', b64PFront);
+    fd.append('patientIdBack',  b64PBack);
 
     const resp = await fetch(GAS_URL, { method: 'POST', body: fd });
     const result = await resp.json();
